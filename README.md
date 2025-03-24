@@ -1,4 +1,4 @@
-### A ve BFS Algoritmalarını Kullanarak Sürücüsüz Metro Simulasyonu
+### A* ve BFS Algoritmalarını Kullanarak Sürücüsüz Metro Simulasyonu
 ## 1. Proje Açıklaması
 Bu proje, iki farklı arama algoritmasını kullanarak bir harita üzerinde en kısa yolu bulmayı amaçlar. BFS (Breadth-First Search) ve A (A-Star) Algoritmaları* kullanılarak bir başlangıç noktasından hedef noktaya ulaşmanın en iyi yolu hesaplanır.
 
