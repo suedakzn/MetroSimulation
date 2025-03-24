@@ -16,6 +16,7 @@ A* (A-Star) Algoritması: A* algoritması, her adımda mevcut maliyet (g) ile he
 
 ### Neden Bu Algoritmalar Seçildi?
 BFS: Ağırlıksız graf yapılarında garantili en kısa yol bulma özelliği sunduğu için tercih ettim.
+
 A*: Ağırlıklı graf yapılarında daha verimli çalışarak, optimal çözümleri sunması nedeniyle bu algoritmayı kullanmaya karar verdim.
 
 ### Gereksinimler
