@@ -25,16 +25,6 @@ BFS: Ağırlıksız graf yapılarında garantili en kısa yol bulma özelliği s
 
 A*: Ağırlıklı graf yapılarında daha verimli çalışarak, optimal çözümleri sunması nedeniyle bu algoritmayı kullanmaya karar verdim.
 
-### Gereksinimler
-Projeyi çalıştırmak için aşağıdaki bağımlılıkları yüklemeniz gerekmektedir. Bunun için `requirements.txt` dosyasını kullanabilirsiniz:
-txt
-heapq
-collections
-math
-
-Bu dosya, projeyi çalıştırmadan önce yüklenmesi gereken tüm kütüphaneleri içermektedir. Bağımlılıkları yüklemek için şu komutu kullanabilirsiniz:
-pip install -r requirements.txt
-
 ## 4. Örnek Kullanım ve Test Sonuçları
 Örnek Kullanım:
 Projeyi çalıştırmak için aşağıdaki komutları takip edebilirsiniz:
