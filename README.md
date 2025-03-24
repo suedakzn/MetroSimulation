@@ -5,9 +5,15 @@ Bu proje, iki farklı arama algoritmasını kullanarak bir harita üzerinde en k
 ## 2. Kullanılan Teknolojiler ve Kütüphaneler
 Bu projede aşağıdaki teknolojiler ve kütüphaneler kullanılmıştır:
 
-- Python: Proje dili
-- heapq: A* algoritmasında öncelikli kuyruk (priority queue) yapısı için kullanıldı.
-- collections.deque: BFS algoritmasında çift uçlu kuyruk veri yapısı için kullanıldı.
+- **Python**: Proje dili olarak Python kullanılmıştır.
+- **heapq**: A* algoritmasında öncelikli kuyruk (priority queue) yapısı için kullanıldı. Bu kütüphane, bir min-heap veri yapısı sağlar ve en küçük öğeyi verimli bir şekilde bulmamıza olanak tanır.
+- **collections.deque**: BFS algoritmasında çift uçlu kuyruk (deque) veri yapısı için kullanıldı. Bu veri yapısı, her iki uçtan da öğe eklemeyi ve çıkarmayı verimli hale getirir.
+- **typing**: Python'un tip ipuçlarını kullanmak için kullanılır. Bu, kodun okunabilirliğini artırır ve hata olasılıklarını azaltır. Aşağıdaki tipler kullanılmıştır:
+  - `Dict`: Anahtar-değer çiftlerinden oluşan bir sözlük veri yapısını temsil eder.
+  - `List`: Liste veri tipini temsil eder.
+  - `Set`: Benzersiz öğelerden oluşan bir küme veri yapısını temsil eder.
+  - `Tuple`: Sabit uzunluktaki ve değiştirilemez öğelerden oluşan bir veri yapısını temsil eder.
+  - `Optional`: Bir değişkenin belirtilen türü veya `None` olabileceğini belirtir.
 
 ## 3. Algoritmaların Çalışma Mantığı
 BFS (Breadth-First Search) Algoritması: BFS algoritması, başlangıç düğümünden itibaren katmanlı (level-wise) olarak ilerler ve her adımda daha yakın olan düğümleri kontrol eder. FIFO kuyruk yapısını kullanarak en kısa yolu bulmaya çalışır. Özellikle, ağırlıksız graf yapılarında doğru ve garantili sonuçlar verir.
