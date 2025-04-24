@@ -1,51 +1,40 @@
-### A* ve BFS Algoritmalarını Kullanarak Sürücüsüz Metro Simulasyonu
-## 1. Proje Açıklaması
-Bu proje, iki farklı arama algoritmasını kullanarak bir harita üzerinde en kısa yolu bulmayı amaçlar. BFS (Breadth-First Search) ve A (A-Star) Algoritmaları* kullanılarak bir başlangıç noktasından hedef noktaya ulaşmanın en iyi yolu hesaplanır.
+- Bu projede basit bir heuristic olarak istasyon ID’lerinin sayısal farkı kullanılmıştır.
 
-## 2. Kullanılan Teknolojiler ve Kütüphaneler
-Bu projede aşağıdaki teknolojiler ve kütüphaneler kullanılmıştır:
+---
 
-- **Python**: Proje dili olarak Python kullanılmıştır.
-- **heapq**: A* algoritmasında öncelikli kuyruk (priority queue) yapısı için kullanıldı. Bu kütüphane, bir min-heap veri yapısı sağlar ve en küçük öğeyi verimli bir şekilde bulmamıza olanak tanır.
-- **collections.deque**: BFS algoritmasında çift uçlu kuyruk (deque) veri yapısı için kullanıldı. Bu veri yapısı, her iki uçtan da öğe eklemeyi ve çıkarmayı verimli hale getirir.
-- **typing**: Python'un tip ipuçlarını kullanmak için kullanılır. Bu, kodun okunabilirliğini artırır ve hata olasılıklarını azaltır. Aşağıdaki tipler kullanılmıştır:
-  - `Dict`: Anahtar-değer çiftlerinden oluşan bir sözlük veri yapısını temsil eder.
-  - `List`: Liste veri tipini temsil eder.
-  - `Set`: Benzersiz öğelerden oluşan bir küme veri yapısını temsil eder.
-  - `Tuple`: Sabit uzunluktaki ve değiştirilemez öğelerden oluşan bir veri yapısını temsil eder.
-  - `Optional`: Bir değişkenin belirtilen türü veya `None` olabileceğini belirtir.
+## 🎯 Neden Bu Algoritmalar Seçildi?
 
-## 3. Algoritmaların Çalışma Mantığı
-BFS (Breadth-First Search) Algoritması: BFS algoritması, başlangıç düğümünden itibaren katmanlı (level-wise) olarak ilerler ve her adımda daha yakın olan düğümleri kontrol eder. FIFO kuyruk yapısını kullanarak en kısa yolu bulmaya çalışır. Özellikle, ağırlıksız graf yapılarında doğru ve garantili sonuçlar verir.
+- **BFS** → Ağırlıksız graf yapılarında garantili en kısa aktarma sayısını verdiği için,
+- **A\*** → Süre bazlı hesaplamalarda daha verimli ve optimal çözüm sunduğu için.
 
-A* (A-Star) Algoritması: A* algoritması, her adımda mevcut maliyet (g) ile hedefe olan tahmini maliyet (h) toplamını kullanarak en uygun yolculuğu bulur. Bu algoritma, daha verimli sonuçlar almak için heuristik fonksiyonlardan faydalanır. Genellikle, Manhattan mesafesi veya Öklid mesafesi gibi yöntemler kullanarak hedefe olan tahmini mesafeyi hesaplar.
+---
 
-### Neden Bu Algoritmalar Seçildi?
-BFS: Ağırlıksız graf yapılarında garantili en kısa yol bulma özelliği sunduğu için tercih ettim.
 
-A*: Ağırlıklı graf yapılarında daha verimli çalışarak, optimal çözümleri sunması nedeniyle bu algoritmayı kullanmaya karar verdim.
+🧪 Test Senaryoları
+Projeyi çalıştırdığınızda şu örnek senaryolar otomatik test edilir:
 
-## 4. Örnek Kullanım ve Test Sonuçları
-Örnek Kullanım:
-Projeyi çalıştırmak için aşağıdaki komutları takip edebilirsiniz:
-python metro_simulation.py --start 'A' --end 'F'
+AŞTİ → OSB
 
-Bu komut, 'A' noktasından 'F' noktasına olan en kısa yolu bulacaktır.
+Batıkent → Keçiören
 
-Test Sonuçları:
-Örnek metro ağı için BFS ve A* algoritmalarının sonuçları:
+Keçiören → AŞTİ
 
-BFS Sonucu: Başlangıç 'A' noktasından hedef 'F' noktasına giden en kısa yol:
-A -> B -> C -> D -> F
-Toplam mesafe: 4
+Örnek çıktı:
+![Ekran görüntüsü 2025-04-24 155830](https://github.com/user-attachments/assets/aaa81280-1a7e-45f5-8302-fd222bdd9b3e)
 
-A Sonucu*: Başlangıç 'A' noktasından hedef 'F' noktasına giden en kısa yol:
-A -> B -> E -> F
-Toplam mesafe: 3
+💡 Geliştirme Fikirleri
+Gerçek koordinatlarla daha doğru heuristic() hesaplamaları,
 
-## 5. Projeyi Geliştirme Fikirleri
-Projeyi geliştirirken aşağıdaki fikirler aklıma geldi:
-- Daha büyük metro ağları ile testler yaparak algoritmaların farklı büyüklükteki ağlarda nasıl performans gösterdiğini gözlemlemek.
-- Farklı metro sistemleri ve hatlar ekleyerek projeyi daha geniş çapta uygulamaya dökmek.
-- Kullanıcı dostu bir arayüz geliştirerek, harita üzerinde rotaları görsel olarak sunmak.
-- Kullanıcıya, farklı rota alternatiflerini sunarak seçim yapmalarını sağlamak.
+Harita üzerinde görsel metro ağı çizimi ve animasyonlu rota izleme,
+
+Kullanıcı arayüzü (GUI) ile daha etkileşimli deneyim,
+
+Gerçek şehir verileriyle entegre edilebilir bir navigasyon aracı.
+
+👩‍💻 Geliştirici
+Sueda Kazan
+GitHub: github.com/suedakzn
+
+Bu proje, algoritmaların gerçek dünya problemlerine nasıl uygulanabileceğini gösteren yalın ama etkili bir simülasyondur.
+Keyifli incelemeler ve katkılar dilerim! 🚇💻✨
+
