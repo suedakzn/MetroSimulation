@@ -45,7 +45,7 @@ toplam_maliyet = g (geçilen süre) + h (tahmini kalan süre)
 ---
 
 
-🧪 Test Senaryoları
+## **🧪 Test Senaryoları**
 Projeyi çalıştırdığınızda şu örnek senaryolar otomatik test edilir:
 
 AŞTİ → OSB
@@ -58,7 +58,9 @@ Keçiören → AŞTİ
 
 ![Ekran görüntüsü 2025-04-24 155830](https://github.com/user-attachments/assets/aaa81280-1a7e-45f5-8302-fd222bdd9b3e)
 
-💡 Geliştirme Fikirleri
+---
+
+## **💡 Geliştirme Fikirleri**
 Gerçek koordinatlarla daha doğru heuristic() hesaplamaları,
 
 Harita üzerinde görsel metro ağı çizimi ve animasyonlu rota izleme,
@@ -67,7 +69,8 @@ Kullanıcı arayüzü (GUI) ile daha etkileşimli deneyim,
 
 Gerçek şehir verileriyle entegre edilebilir bir navigasyon aracı.
 
-👩‍💻 Geliştirici
+---
+## 👩‍💻 **Geliştirici**
 Sueda Kazan
 GitHub: github.com/suedakzn
 
