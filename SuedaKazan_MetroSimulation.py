@@ -4,132 +4,151 @@ from typing import Dict, List, Set, Tuple, Optional
 
 class Istasyon:
     def __init__(self, idx: str, ad: str, hat: str):
-        self.idx = idx
-        self.ad = ad
-        self.hat = hat
-        self.komsular: List[Tuple['Istasyon', int]] = []  # (istasyon, süre) tuple'ları
+        # İstasyon sınıfı; her istasyonun ID'si, adı, hattı ve komşuları vardır.
+        self.idx = idx  # İstasyonun benzersiz kimliği
+        self.ad = ad  # İstasyonun adı (görüntülenecek)
+        self.hat = hat  # İstasyonun ait olduğu metro hattı
+        self.komsular: List[Tuple['Istasyon', int]] = []  # (komşu istasyon, süre) tuple listesi
 
     def komsu_ekle(self, istasyon: 'Istasyon', sure: int):
+        # Bir komşu istasyonu ve ona ulaşım süresini ekler
         self.komsular.append((istasyon, sure))
 
 class MetroAgi:
     def __init__(self):
+        # Metro ağı sınıfı; tüm istasyonları ve hatları tutar
         self.istasyonlar: Dict[str, Istasyon] = {}
         self.hatlar: Dict[str, List[Istasyon]] = defaultdict(list)
 
     def istasyon_ekle(self, idx: str, ad: str, hat: str) -> None:
-        if id not in self.istasyonlar:
+        # Yeni bir istasyon ekler (ID eşsiz olmalı)
+        if idx not in self.istasyonlar:
             istasyon = Istasyon(idx, ad, hat)
             self.istasyonlar[idx] = istasyon
             self.hatlar[hat].append(istasyon)
 
     def baglanti_ekle(self, istasyon1_id: str, istasyon2_id: str, sure: int) -> None:
+        # İki istasyon arasında çift yönlü bağlantı oluşturur
         istasyon1 = self.istasyonlar[istasyon1_id]
         istasyon2 = self.istasyonlar[istasyon2_id]
         istasyon1.komsu_ekle(istasyon2, sure)
         istasyon2.komsu_ekle(istasyon1, sure)
-    
+
+    # === EN AZ AKTARMALI ROTA (BFS) ===
+    # Bu fonksiyon, iki istasyon arasındaki en az aktarmalı güzergahı bulmak için Breadth-First Search (BFS) algoritmasını kullanır.
+    # BFS, tüm yolları eşit sürede arar ve ilk bulunan geçerli çözüm, minimum aktarma garantisi verir.
+
     def en_az_aktarma_bul(self, baslangic_id: str, hedef_id: str) -> Optional[List[Istasyon]]:
+        # Breadth-First Search (BFS) algoritması ile en az aktarma içeren rotayı bulur
         if baslangic_id not in self.istasyonlar or hedef_id not in self.istasyonlar:
-            return None # Başlangıç veya hedef istasyon metro ağı içinde yoksa None döndür
-        
+            return None  # Geçersiz ID'ler
+
         baslangic = self.istasyonlar[baslangic_id]
         hedef = self.istasyonlar[hedef_id]
 
-        # BFS için kuyruk başlat: (mevcut istasyon, yol listesi, aktarma sayısı, önceki hat)
+        # Kuyruk yapısı: (şu anki istasyon, rota listesi, aktarma sayısı, önceki hat)
         kuyruk = deque([(baslangic, [baslangic], 0, baslangic.hat)])
-        ziyaret_edilen = dict() # Ziyaret edilen istasyon ve hat kombinasyonlarını takip eder
+        ziyaret_edilen = dict()  # Aynı istasyona aynı hatta daha önce gidildiyse tekrar gitmemek için
 
         while kuyruk:
-            mevcut, yol, aktarma, onceki_hat = kuyruk.popleft()  # Kuyruktan eleman çıkar
+            mevcut, yol, aktarma, onceki_hat = kuyruk.popleft()
 
             if mevcut.idx == hedef.idx:
-                return yol # Hedefe ulaşıldıysa yolu döndür
-            
+                return yol  # Hedefe ulaşıldıysa yol döndürülür
+
             for komsu, _ in mevcut.komsular:
                 yeni_hat = komsu.hat
                 yeni_aktarma = aktarma + (1 if yeni_hat != onceki_hat else 0)
-
                 ziyaret_kaydi = (komsu.idx, yeni_hat)
-                # Eğer daha önce aynı istasyona daha az aktarmayla gidildiyse, işlemi atla
+
+                # Daha az aktarmayla gidilmişse tekrar işleme gerek yok
                 if ziyaret_kaydi in ziyaret_edilen and ziyaret_edilen[ziyaret_kaydi] <= yeni_aktarma:
                     continue
 
-                ziyaret_edilen[ziyaret_kaydi] = yeni_aktarma  # Yeni aktarma sayısını kaydet
-                kuyruk.append((komsu, yol + [komsu], yeni_aktarma, yeni_hat))  # Kuyruğa ekle
+                ziyaret_edilen[ziyaret_kaydi] = yeni_aktarma
+                kuyruk.append((komsu, yol + [komsu], yeni_aktarma, yeni_hat))
 
-        return None # Hedefe ulaşılamadıysa None döndür
+        return None  # Ulaşım mümkün değilse
     
+    # === HEURISTIC FONKSIYON ===
+    # A* algoritmasında kullanılan tahmini kalan mesafeyi hesaplayan fonksiyon.
+    # Burada istasyon ID’lerinin sayı kısmı kullanılarak yaklaşık fark hesaplanır.
+    # Gerçek dünyada bu değer, iki istasyonun koordinatlarına göre daha doğru hesaplanabilir.
+
+    def heuristic(self, istasyon1: Istasyon, istasyon2: Istasyon) -> int:
+        # Basit bir tahmin fonksiyonu: ID'ler üzerinden mesafe
+        return abs(int(istasyon1.idx[1:]) - int(istasyon2.idx[1:]))
+    
+    # === EN HIZLI ROTA (A* ALGORİTMASI) ===
+    # Bu fonksiyon, başlangıç ve hedef istasyon arasındaki en kısa süreli rotayı bulmak için A* algoritmasını kullanır.
+    # A* algoritması, her adımda toplam maliyeti (geçilen yol + hedefe kalan tahmini yol) hesaba katar.
+    # Bu sayede klasik Dijkstra algoritmasından daha verimli çalışır.
+    # 'heuristic()' fonksiyonu hedefe olan tahmini mesafeyi verir ve bu tahmin A*'ın öncelik sırasını belirler.
+
     def en_hizli_rota_bul(self, baslangic_id: str, hedef_id: str) -> Optional[Tuple[List[Istasyon], int]]:
         if baslangic_id not in self.istasyonlar or hedef_id not in self.istasyonlar:
-            return None  # Başlangıç veya hedef istasyon yoksa None döndür
-        
+            return None
+
         baslangic = self.istasyonlar[baslangic_id]
         hedef = self.istasyonlar[hedef_id]
-        
-        heap = [(0, baslangic.idx, baslangic, [baslangic])] 
-        en_kisa_sure = {baslangic.idx: 0}  # En kısa süreler
-        
+
+        # heap yapısına sıralanabilir 'komsu.idx' eklendi
+        heap = [(self.heuristic(baslangic, hedef), 0, baslangic.idx, baslangic, [baslangic])]
+        en_kisa_sure = {baslangic.idx: 0}
+
         while heap:
-            toplam_sure, _, mevcut, yol = heapq.heappop(heap)  # Tuple'dan unpack et
-            
+            _, toplam_sure, _, mevcut, yol = heapq.heappop(heap)
+
             if mevcut.idx == hedef.idx:
-                return (yol, toplam_sure)  # Hedefe ulaşıldığında sonucu döndür
-            
+                return (yol, toplam_sure)
+
             for komsu, sure in mevcut.komsular:
                 yeni_toplam_sure = toplam_sure + sure
-                
+
                 if komsu.idx not in en_kisa_sure or yeni_toplam_sure < en_kisa_sure[komsu.idx]:
                     en_kisa_sure[komsu.idx] = yeni_toplam_sure
-                    heapq.heappush(heap, (yeni_toplam_sure, komsu.idx, komsu, yol + [komsu]))  # idx eklendi!
-                    
-        return None  # Hedefe ulaşılamadıysa None döndür
+                    tahmini_maliyet = yeni_toplam_sure + self.heuristic(komsu, hedef)
+                    heapq.heappush(heap, (tahmini_maliyet, yeni_toplam_sure, komsu.idx, komsu, yol + [komsu]))
+
+        return None
 
 
-
-# Örnek Kullanım
 if __name__ == "__main__":
     metro = MetroAgi()
-    
-    # İstasyonlar ekleme
-    # Kırmızı Hat
+
+    # İstasyonlar tanımlanıyor
     metro.istasyon_ekle("K1", "Kızılay", "Kırmızı Hat")
     metro.istasyon_ekle("K2", "Ulus", "Kırmızı Hat")
     metro.istasyon_ekle("K3", "Demetevler", "Kırmızı Hat")
     metro.istasyon_ekle("K4", "OSB", "Kırmızı Hat")
-    
-    # Mavi Hat
+
     metro.istasyon_ekle("M1", "AŞTİ", "Mavi Hat")
-    metro.istasyon_ekle("M2", "Kızılay", "Mavi Hat")  # Aktarma noktası
+    metro.istasyon_ekle("M2", "Kızılay", "Mavi Hat")
     metro.istasyon_ekle("M3", "Sıhhiye", "Mavi Hat")
     metro.istasyon_ekle("M4", "Gar", "Mavi Hat")
-    
-    # Turuncu Hat
+
     metro.istasyon_ekle("T1", "Batıkent", "Turuncu Hat")
-    metro.istasyon_ekle("T2", "Demetevler", "Turuncu Hat")  # Aktarma noktası
-    metro.istasyon_ekle("T3", "Gar", "Turuncu Hat")  # Aktarma noktası
+    metro.istasyon_ekle("T2", "Demetevler", "Turuncu Hat")
+    metro.istasyon_ekle("T3", "Gar", "Turuncu Hat")
     metro.istasyon_ekle("T4", "Keçiören", "Turuncu Hat")
-    
-    # Bağlantılar ekleme
-    # Kırmızı Hat bağlantıları
-    metro.baglanti_ekle("K1", "K2", 4)  # Kızılay -> Ulus
-    metro.baglanti_ekle("K2", "K3", 6)  # Ulus -> Demetevler
-    metro.baglanti_ekle("K3", "K4", 8)  # Demetevler -> OSB
-    
-    # Mavi Hat bağlantıları
-    metro.baglanti_ekle("M1", "M2", 5)  # AŞTİ -> Kızılay
-    metro.baglanti_ekle("M2", "M3", 3)  # Kızılay -> Sıhhiye
-    metro.baglanti_ekle("M3", "M4", 4)  # Sıhhiye -> Gar
-    
-    # Turuncu Hat bağlantıları
-    metro.baglanti_ekle("T1", "T2", 7)  # Batıkent -> Demetevler
-    metro.baglanti_ekle("T2", "T3", 9)  # Demetevler -> Gar
-    metro.baglanti_ekle("T3", "T4", 5)  # Gar -> Keçiören
-    
-    # Hat aktarma bağlantıları (aynı istasyon farklı hatlar)
-    metro.baglanti_ekle("K1", "M2", 2)  # Kızılay aktarma
-    metro.baglanti_ekle("K3", "T2", 3)  # Demetevler aktarma
-    metro.baglanti_ekle("M4", "T3", 2)  # Gar aktarma
+
+    # İstasyonlar arası bağlantılar tanımlanıyor
+    metro.baglanti_ekle("K1", "K2", 4)
+    metro.baglanti_ekle("K2", "K3", 6)
+    metro.baglanti_ekle("K3", "K4", 8)
+
+    metro.baglanti_ekle("M1", "M2", 5)
+    metro.baglanti_ekle("M2", "M3", 3)
+    metro.baglanti_ekle("M3", "M4", 4)
+
+    metro.baglanti_ekle("T1", "T2", 7)
+    metro.baglanti_ekle("T2", "T3", 9)
+    metro.baglanti_ekle("T3", "T4", 5)
+
+    # Hatlar arası aktarma bağlantıları
+    metro.baglanti_ekle("K1", "M2", 2)
+    metro.baglanti_ekle("K3", "T2", 3)
+    metro.baglanti_ekle("M4", "T3", 2)
     
     # Test senaryoları
     print("\n=== Test Senaryoları ===")
